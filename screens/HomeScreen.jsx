@@ -11,6 +11,9 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
+
+import { calculateDistance } from '../utils/Helpers';
+import DistanceDisplay from '../components/DistanceDisplay';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Cinzel_900Black } from '@expo-google-fonts/cinzel';
 import {
@@ -23,6 +26,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isSmallDevice = SCREEN_WIDTH < 380;
 
 export default function HomeScreen() {
+console.log('Test distance:', testDistance);
   const [fontsLoaded] = useFonts({
     Cinzel_900Black,
     PlusJakartaSans_600SemiBold,
@@ -78,6 +82,8 @@ export default function HomeScreen() {
             <Text style={styles.subtitleText}>
               Find your space.
             </Text>
+
+          
 
             {/* Glassmorphic Floating Navigation Bar */}
             <TouchableOpacity
