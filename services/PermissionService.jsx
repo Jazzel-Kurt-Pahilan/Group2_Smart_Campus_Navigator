@@ -1,4 +1,3 @@
-// services/PermissionService.jsx
 import * as Location from 'expo-location';
 
 /**
@@ -8,7 +7,7 @@ import * as Location from 'expo-location';
 
 export async function checkLocationPermission() {
   const { status } = await Location.getForegroundPermissionsAsync();
-  return status; // 'granted' | 'denied' | 'undetermined'
+  return status; 
 }
 
 export async function requestLocationPermission() {

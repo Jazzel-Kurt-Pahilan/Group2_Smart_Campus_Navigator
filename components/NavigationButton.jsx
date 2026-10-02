@@ -1,4 +1,3 @@
-// components/NavigationButton.jsx
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Linking, Platform } from 'react-native';
 import { Navigation } from 'lucide-react-native';
