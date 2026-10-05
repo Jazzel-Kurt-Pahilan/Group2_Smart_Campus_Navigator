@@ -1,6 +1,5 @@
-import { Link, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { Pressable } from 'react-native';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -57,16 +56,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="MapScreen"
         options={{
-          title: 'Campus Map',
+          title: '',
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{
-                ios: 'map.fill',
-                android: 'map',
-                web: 'map',
+                
+                
+               
               }}
-              tintColor={color}
-              size={28}
+              
+             
             />
           ),
         }}

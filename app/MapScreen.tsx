@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { Image, Linking, Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import MapPin from '../../components/MapPin';
-import NavigationButton from '../../components/NavigationButton';
-import { mapPins, Pin } from '../../services/mapPins';
+import MapPin from '../components/MapPin';
+import NavigationButton from '../components/NavigationButton';
+import { mapPins, Pin } from '../services/mapPins';
 
 const MAX_SCALE = 5;
 
@@ -113,7 +113,7 @@ export default function MapScreen() {
         <View style={styles.mapArea}>
           <Animated.View style={[{ width: mapWidth, height: mapHeight }, mapStyle]}>
             <Image
-              source={require('../../assets/campusmap.png')}
+              source={require('../assets/campusmap.png')}
               style={{ width: mapWidth, height: mapHeight }}
               resizeMode="contain"
             />

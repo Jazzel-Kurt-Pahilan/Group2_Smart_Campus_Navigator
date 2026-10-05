@@ -1,18 +1,10 @@
-<<<<<<< HEAD:services/PermissionService.ts
-// services/PermissionService.ts
-=======
->>>>>>> 645f6a1ea5c2dba5e1b029de034025112fdae18f:services/PermissionService.jsx
 import * as Location from 'expo-location';
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
 
 export async function checkLocationPermission(): Promise<PermissionStatus> {
   const { status } = await Location.getForegroundPermissionsAsync();
-<<<<<<< HEAD:services/PermissionService.ts
-  return status as PermissionStatus;
-=======
   return status; 
->>>>>>> 645f6a1ea5c2dba5e1b029de034025112fdae18f:services/PermissionService.jsx
 }
 
 export async function requestLocationPermission(): Promise<PermissionStatus> {
