@@ -53,6 +53,25 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="MapScreen"
+        options={{
+          title: 'Campus Map',
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{
+                ios: 'map.fill',
+                android: 'map',
+                web: 'map',
+              }}
+              tintColor={color}
+              size={28}
+            />
+          ),
+        }}
+      />
     </Tabs>
+    
   );
 }
