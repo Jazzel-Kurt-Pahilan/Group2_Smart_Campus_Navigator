@@ -1,13 +1,7 @@
-import { Cinzel_900Black, useFonts } from '@expo-google-fonts/cinzel';
-import {
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_800ExtraBold,
-} from '@expo-google-fonts/plus-jakarta-sans';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import {
-  ActivityIndicator,
   ImageBackground,
+  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -15,41 +9,30 @@ import {
   View,
 } from 'react-native';
 
-import BrandTitle from '@/components/home/BrandTitle';
-import ExploreButton from '@/components/home/ExploreButton';
-import PermissionNotice from '@/components/home/PermissionNotice';
 import { COLORS, FONTS, IS_SMALL_DEVICE } from '@/constants/theme';
-import { useMapAccess } from '@/hooks/useMapAcess';
+import BrandTitle from './home/BrandTitle';
+import ExploreButton from './home/ExploreButton';
+import PermissionNotice from './home/PermissionNotice';
 
-export default function HomeScreen() {
-  const router = useRouter();
-  const { checking, error, requestAccess, openSettings } = useMapAccess();
+type Props = {
+  checking: boolean;
+  error: string | null;
+  onExplore: () => void;
+  onOpenSettings: () => void;
+};
 
-  const [fontsLoaded] = useFonts({
-    Cinzel_900Black,
-    PlusJakartaSans_600SemiBold,
-    PlusJakartaSans_800ExtraBold,
-  });
-
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.gold} />
-      </View>
-    );
-  }
-
-  const handleExplore = async () => {
-    const granted = await requestAccess();
-    if (granted) router.push('/MapScreen');
-  };
-
+export default function HomeView({
+  checking,
+  error,
+  onExplore,
+  onOpenSettings,
+}: Props) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       <ImageBackground
-        source={require('../../assets/welcomebg.png')}
+        source={require('../assets/welcomebg.png')}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
@@ -73,10 +56,10 @@ export default function HomeScreen() {
 
             <Text style={styles.subtitleText}>Find your space.</Text>
 
-            <ExploreButton onPress={handleExplore} loading={checking} />
+            <ExploreButton onPress={onExplore} loading={checking} />
 
             {error && (
-              <PermissionNotice message={error} onOpenSettings={openSettings} />
+              <PermissionNotice message={error} onOpenSettings={onOpenSettings} />
             )}
           </View>
         </SafeAreaView>
@@ -87,12 +70,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, width: '100%', height: '100%', backgroundColor: COLORS.navy },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: COLORS.navy,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   backgroundImage: { flex: 1, width: '100%', height: '100%' },
   safeArea: {
     flex: 1,
@@ -132,8 +109,8 @@ const styles = StyleSheet.create({
   subtitleText: {
     fontFamily: FONTS.semibold,
     color: 'rgba(241, 245, 249, 0.92)',
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: Platform.OS === 'web' ? 14.5 : 13,
+    lineHeight: Platform.OS === 'web' ? 22 : 19,
     textAlign: 'center',
     maxWidth: 340,
     marginBottom: 28,
