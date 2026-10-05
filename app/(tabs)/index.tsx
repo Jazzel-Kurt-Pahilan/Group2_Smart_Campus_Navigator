@@ -1,22 +1,26 @@
-import {
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-  ActivityIndicator,
-  StyleSheet,
-  Platform,
-  Dimensions,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useFonts, Cinzel_900Black } from '@expo-google-fonts/cinzel';
+import { Cinzel_900Black, useFonts } from '@expo-google-fonts/cinzel';
 import {
   PlusJakartaSans_600SemiBold,
   PlusJakartaSans_800ExtraBold,
 } from '@expo-google-fonts/plus-jakarta-sans';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { MapPin, Navigation } from 'lucide-react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  ImageBackground,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+const router = useRouter();
+
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isSmallDevice = SCREEN_WIDTH < 380;
@@ -37,8 +41,8 @@ export default function HomeScreen() {
   }
 
   const handleNavigateToMap = () => {
-    console.log('Navigating to Campus Map...');
-  };
+  router.push('/MapScreen');
+};
 
   return (
     <View style={styles.container}>
