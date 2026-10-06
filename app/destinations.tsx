@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import DestinationCard from "../../components/DestinationCard";
-import destinations from "../../services/destinationService";
+import DestinationCard from "../components/DestinationCard";
+import destinations from "../services/destinationService";
 
 type Destination = {
   id: string;
