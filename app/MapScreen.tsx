@@ -1,11 +1,26 @@
 // app/(tabs)/MapScreen.tsx
 import { useState } from 'react';
-import { Image, Linking, Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import {
+  Image,
+  Linking,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import DestinationCard from '../components/DestinationCard';
 import MapPin from '../components/MapPin';
 import NavigationButton from '../components/NavigationButton';
+import destinations from '../services/destinationService';
 import { mapPins, Pin } from '../services/mapPins';
+
+
+
 
 const MAX_SCALE = 5;
 
@@ -27,7 +42,11 @@ const IMAGE_HEIGHT = 1170;
 const IMAGE_ASPECT_RATIO = IMAGE_HEIGHT / IMAGE_WIDTH;
 
 export default function MapScreen() {
+
+  const [showDestinations, setShowDestinations] = useState(false);
   const { width, height } = useWindowDimensions();
+
+  
 
   // Base the map's displayed size on the larger screen dimension (same intent as before),
   // but now width/height keep the image's real proportions instead of forcing a square.
@@ -109,6 +128,35 @@ export default function MapScreen() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
+      <TouchableOpacity
+        style={styles.destinationButton}
+        onPress={() => setShowDestinations(!showDestinations)}
+      >
+        <Text style={styles.destinationButtonText}>
+          ☰ Destinations
+        </Text>
+      </TouchableOpacity>
+
+            {showDestinations && (
+        <View style={styles.destinationPanel}>
+          <ScrollView showsVerticalScrollIndicator={true}>
+            {destinations.map((item) => (
+              <DestinationCard
+                key={item.id}
+                name={item.name}
+                category={item.category}
+                onPress={() => {
+                  const pin = mapPins.find((pin) => pin.id === item.id);
+                  if (pin) {
+                    setSelected(pin);
+                  }
+                  setShowDestinations(false);
+                }}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      )}
       <GestureDetector gesture={gesture}>
         <View style={styles.mapArea}>
           <Animated.View style={[{ width: mapWidth, height: mapHeight }, mapStyle]}>
@@ -148,12 +196,48 @@ export default function MapScreen() {
         )}
       </View>
     </GestureHandlerRootView>
+
+
+
+
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#CFE8F7' },
   mapArea: { flex: 1, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+  destinationButton: {
+    position: 'absolute',
+    top: 50,
+    left: 16,
+    zIndex: 20,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    elevation: 6,
+  },
+
+  // 🟢 ADD THIS
+  destinationButtonText: {
+    color: '#020617',
+    fontWeight: '700',
+  },
+
+  // 🟢 ADD THIS
+  destinationPanel: {
+    position: 'absolute',
+    top: 50,
+    left: 16,
+    right: 16,
+    maxHeight: '70%',
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    zIndex: 30,
+    elevation: 10,
+  },
+
   card: {
     position: 'absolute',
     left: 12,

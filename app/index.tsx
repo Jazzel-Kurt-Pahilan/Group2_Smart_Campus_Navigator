@@ -49,7 +49,7 @@ export default function HomeScreen() {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       <ImageBackground
-        source={require('../../assets/welcomebg.png')}
+        source={require('../assets/welcomebg.png')}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
