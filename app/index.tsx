@@ -41,7 +41,7 @@ export default function HomeScreen() {
 
   const handleExplore = async () => {
     const granted = await requestAccess();
-    if (granted) router.push('/MapScreen');
+    if (granted) router.push('/map');
   };
 
   return (
