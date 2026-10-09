@@ -1,4 +1,8 @@
-import { LocationPermissionDataSource as Permission } from '@/data/location/LocationPermissionDataSource';
+
+import {
+  ensureLocationPermission,
+  openLocationSettings as openSettings,
+} from '@/services/CampusPermissionService';
 
 export type MapAccessResult = {
   granted: boolean;
@@ -8,18 +12,15 @@ export type MapAccessResult = {
 const MESSAGES = {
   denied:
     'Location access was denied. Enable it in your device settings to see nearby campus buildings.',
-  error: 'Something went wrong while checking location access. Please try again.',
+  error:
+    'Something went wrong while checking location access. Please try again.',
 };
 
 export async function requestMapAccess(): Promise<MapAccessResult> {
   try {
-    let status = await Permission.getStatus();
+    const permission = await ensureLocationPermission();
 
-    if (status !== 'granted') {
-      status = await Permission.request();
-    }
-
-    return status === 'granted'
+    return permission.status === 'granted'
       ? { granted: true, message: null }
       : { granted: false, message: MESSAGES.denied };
   } catch {
@@ -27,4 +28,4 @@ export async function requestMapAccess(): Promise<MapAccessResult> {
   }
 }
 
-export const openLocationSettings = () => Permission.openSettings();
+export const openLocationSettings = openSettings;

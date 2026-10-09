@@ -1,76 +1,59 @@
-import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
 
-import LocationStatus from '@/components/LocationStatus';
-
+import LocationStatus from '@/components/location/LocationStatus';
 import {
   ensureLocationPermission,
-  getPermissionMessage,
-} from '@/services/PermissionService';
+  openLocationSettings,
+} from '@/services/CampusPermissionService';
+import { getIssueContent } from '@/utils/permissionMessages';
+import { CircleCheck } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function LocationStatusScreen() {
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState<string | null>(null);
+  const [permissionBlocked, setPermissionBlocked] = useState(false);
 
-  // loading
-
-  const loadLocationPermission = async () => {
+  const loadLocationPermission = useCallback(async () => {
     try {
-      // start loading
       setLoading(true);
-
-      // clear previous error
       setError(null);
+      setPermissionBlocked(false);
 
-      const permissionGranted =
-        await ensureLocationPermission();
+      const permission = await ensureLocationPermission();
 
-      // permission was denied
-      if (!permissionGranted) {
-        setError(
-          'Location access was denied. Please enable location permission to use the campus navigator.'
-        );
+      if (permission.status !== 'granted') {
+        const blocked = !permission.canAskAgain;
 
-        return;
+        setPermissionBlocked(blocked);
+        setError(getIssueContent(blocked ? 'blocked' : 'denied').message);
       }
-
-    } catch (error) {
-      // handle unexpected errors
-      setError(
-        'Something went wrong while getting your location. Please try again.'
-      );
+    } catch {
+  setError(getIssueContent('unavailable').message);
     } finally {
-      // stop loading whether successful or unsuccessful
       setLoading(false);
     }
-  };
-
-  // initial
-  useEffect(() => {
-    loadLocationPermission();
   }, []);
 
-  // loading/error
+  useEffect(() => {
+    void loadLocationPermission();
+  }, [loadLocationPermission]);
+
   if (loading || error) {
     return (
       <LocationStatus
         loading={loading}
         error={error}
         onRetry={loadLocationPermission}
+        permissionBlocked={permissionBlocked}
+        onOpenSettings={openLocationSettings}
       />
     );
   }
 
-  // success
   return (
     <View style={styles.container}>
-      <Text style={styles.icon}>✓</Text>
+      <CircleCheck size={48} color="#F5B014" style={{ marginBottom: 16 }} />
 
       <Text style={styles.title}>
         Location Permission Granted
@@ -96,13 +79,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
-
   icon: {
     fontSize: 48,
     color: '#F5B014',
     marginBottom: 16,
   },
-
   title: {
     color: '#FFFFFF',
     fontSize: 22,
@@ -110,14 +91,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
-
   message: {
     color: '#E2E8F0',
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 12,
   },
-
   note: {
     color: '#94A3B8',
     fontSize: 14,

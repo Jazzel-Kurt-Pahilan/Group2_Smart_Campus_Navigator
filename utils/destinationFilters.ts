@@ -1,27 +1,30 @@
-// BUSINESS LAYER: rules for ordering and searching the destination list. Pure functions, no UI.
+// BUSINESS LAYER: rules for ordering and searching destinations.
 import { DestinationWithDistance } from '../types';
 
-// Nearest first. Buildings with no distance yet go last, in building-number order.
-export function sortByDistance(list: DestinationWithDistance[]): DestinationWithDistance[] {
+// Sort destinations by distance, nearest first.
+export function sortByDistance(
+  list: DestinationWithDistance[]
+): DestinationWithDistance[] {
   return [...list].sort((a, b) => {
-    if (a.distanceMeters === null && b.distanceMeters === null) return a.number - b.number;
+    if (a.distanceMeters === null && b.distanceMeters === null) {
+      return a.number - b.number;
+    }
     if (a.distanceMeters === null) return 1;
     if (b.distanceMeters === null) return -1;
     return a.distanceMeters - b.distanceMeters;
   });
 }
 
-// Keeps buildings that match the search text (name, category or number) and the favorites filter.
+// Filter destinations by name, category, or building number.
 export function filterDestinations(
   list: DestinationWithDistance[],
-  query: string,
-  favoritesOnly: boolean,
-  favoriteIds: string[]
+  query: string
 ): DestinationWithDistance[] {
   const q = query.trim().toLowerCase();
+
   return list.filter((d) => {
-    if (favoritesOnly && !favoriteIds.includes(d.id)) return false;
     if (q === '') return true;
+
     return (
       d.name.toLowerCase().includes(q) ||
       d.category.toLowerCase().includes(q) ||

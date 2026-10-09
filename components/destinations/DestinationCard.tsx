@@ -1,21 +1,22 @@
+
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type DestinationCardProps = {
   name: string;
-  category: string;
+  number: number;
   onPress: () => void;
 };
 
 export default function DestinationCard({
   name,
-  category,
+  number,
   onPress,
 }: DestinationCardProps) {
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.category}>{category}</Text>
+        <Text style={styles.number}>Building No. {number}</Text>
       </View>
     </Pressable>
   );
@@ -35,8 +36,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  category: {
+  number: {
     marginTop: 4,
     color: "#666",
+    fontSize: 14,
   },
 });

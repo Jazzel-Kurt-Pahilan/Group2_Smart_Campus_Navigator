@@ -1,20 +1,18 @@
-﻿// PRESENTATION LAYER: map screen (parent). It gets results from the hooks and the routing utilities,
-// decides what to show, and passes data to the components through props.
+﻿
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { House } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { Alert, Linking, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ErrorView from '../components/common/ErrorView';
 import LoadingView from '../components/common/LoadingView';
 import NavigationButton from '../components/common/NavigationButton';
-import FavoriteButton from '../components/destinations/FavoriteButton';
 import DistanceDisplay from '../components/location/DistanceDisplay';
 import LocationCard from '../components/location/LocationCard';
 import CampusMap from '../components/map/CampusMap';
 import RouteSummary from '../components/map/RouteSummary';
 import { colors, radius, spacing } from '../constants/campusTheme';
 import { useDestinations } from '../hooks/useDestinations';
-import { useFavorites } from '../hooks/useFavorites';
 import { useUserLocation } from '../hooks/useUserLocation';
 import { UserLocation } from '../types';
 import { bearingDegrees, compassDirection } from '../utils/geo';
@@ -22,12 +20,8 @@ import { destinationToMapPoint, isInsideMap, latLngToMapPoint } from '../utils/m
 import { getIssueContent } from '../utils/permissionMessages';
 import { buildRoute, getGraphLines, hasArrived } from '../utils/routing';
 
-
-// FOR TESTING ONLY: set a fake spot on campus, then set back to null before presenting.
-// Example: { latitude: 8.48652, longitude: 124.65573, accuracy: 5 }
-//const DEBUG_FAKE_LOCATION: UserLocation | null = null;
+// TESTING: Keep fake GPS and walkway graph enabled.
 const DEBUG_FAKE_LOCATION: UserLocation | null = { latitude: 8.48652, longitude: 124.65573, accuracy: 5 };
-// FOR TRACING PATHS: set to true to draw your path network in red, then back to false.
 const SHOW_PATH_GRAPH = true;
 
 export default function MapScreen() {
@@ -35,14 +29,13 @@ export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { state, reload } = useUserLocation();
-  const { isFavorite, toggleFavorite } = useFavorites();
   const [navigating, setNavigating] = useState(false);
 
   const location: UserLocation | null =
     DEBUG_FAKE_LOCATION ?? (state.status === 'ready' ? state.location : null);
+
   const { destinations, selected, selectDestination } = useDestinations(location, id ?? null);
 
-  // When the list screen sends us back with a building id, select it and stop any active route.
   useEffect(() => {
     if (id) {
       setNavigating(false);
@@ -68,20 +61,19 @@ export default function MapScreen() {
     );
   }
 
-  // Business results, calculated before drawing.
   const userPoint = location ? latLngToMapPoint(location) : null;
   const insideCampus = userPoint ? isInsideMap(userPoint) : false;
   const selectedPoint = selected ? destinationToMapPoint(selected) : null;
-  const direction =
-    location && selected ? compassDirection(bearingDegrees(location, selected)) : undefined;
+  const direction = location && selected
+    ? compassDirection(bearingDegrees(location, selected))
+    : undefined;
 
-  const route =
-    navigating && insideCampus && userPoint && selected ? buildRoute(userPoint, selected.id) : null;
+  const route = navigating && insideCampus && userPoint && selected
+    ? buildRoute(userPoint, selected.id)
+    : null;
+
   const noRouteFound = navigating && insideCampus && selected !== null && route === null;
-
-  // Graceful fallback: if no walkway connects, show a straight line instead of nothing.
-  const lineToDraw =
-    route?.points ??
+  const lineToDraw = route?.points ??
     (noRouteFound && userPoint && selectedPoint ? [userPoint, selectedPoint] : null);
 
   const markers = destinations.map((d) => ({
@@ -92,11 +84,10 @@ export default function MapScreen() {
   }));
 
   const handleSelect = (buildingId: string) => {
-    setNavigating(false); // choosing another building ends the current route
+    setNavigating(false);
     selectDestination(buildingId);
   };
 
-  // Tapping empty map closes the building card, but never cancels an active route by accident.
   const handleMapPress = () => {
     if (!navigating) selectDestination(null);
   };
@@ -120,7 +111,22 @@ export default function MapScreen() {
         onMapPress={handleMapPress}
       />
 
+      {/* LEFT: Home and List | RIGHT: Current Location */}
       <View style={[styles.topRow, { top: insets.top + spacing.sm }]}>
+        <View style={styles.leftControls}>
+          <Pressable
+            style={styles.backButton}
+            onPress={() => router.replace('/')}
+            accessibilityRole="button"
+            accessibilityLabel="Back to Home"
+          >
+            <House size={22} color={colors.text} strokeWidth={2} />
+            <Text style={styles.backText}>Home</Text>
+          </Pressable>
+
+          <NavigationButton label="List" onPress={() => router.push('/destinations')} />
+        </View>
+
         <View style={styles.topCard}>
           {location ? (
             <LocationCard
@@ -131,9 +137,9 @@ export default function MapScreen() {
             />
           ) : null}
         </View>
-        <NavigationButton label="List" onPress={() => router.push('/destinations')} />
       </View>
 
+      {/* Destination information */}
       <View style={[styles.bottomCard, { bottom: insets.bottom + spacing.md }]}>
         {selected && navigating ? (
           <RouteSummary
@@ -147,13 +153,7 @@ export default function MapScreen() {
         ) : selected ? (
           <>
             <View style={styles.titleRow}>
-              <Text style={styles.name}>
-                Bldg. {selected.number}: {selected.name}
-              </Text>
-              <FavoriteButton
-                isFavorite={isFavorite(selected.id)}
-                onToggle={() => toggleFavorite(selected.id)}
-              />
+              <Text style={styles.name}>Bldg. {selected.number}: {selected.name}</Text>
             </View>
             <Text style={styles.category}>{selected.category}</Text>
             <DistanceDisplay
@@ -173,6 +173,7 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+
   topRow: {
     position: 'absolute',
     left: spacing.md,
@@ -181,7 +182,23 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: spacing.sm,
   },
-  topCard: { flex: 1 },
+
+  leftControls: { width: 80, alignItems: 'stretch', gap: spacing.sm },
+  topCard: { flex: 1, minWidth: 0 },
+
+  backButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+    borderRadius: radius.lg,
+    elevation: 4,
+  },
+
+  backText: { fontSize: 12, fontWeight: '600', color: colors.text },
+
   bottomCard: {
     position: 'absolute',
     left: spacing.md,
@@ -192,6 +209,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     elevation: 8,
   },
+
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   name: { flex: 1, fontSize: 18, fontWeight: '700', color: colors.text },
   category: { color: colors.textMuted },

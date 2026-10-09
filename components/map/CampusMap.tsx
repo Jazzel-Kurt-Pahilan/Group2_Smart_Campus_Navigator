@@ -1,17 +1,14 @@
 ﻿// PRESENTATION LAYER: campus map image you can drag, pinch-zoom and twist to rotate.
 // It does no calculations: pins, the user dot and the route all arrive through props.
 import { useRef } from 'react';
-import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Line, Polyline } from 'react-native-svg';
-import { Navigation2 } from 'lucide-react-native';
 import MapPin from '../../components/map/MapPin';
 import UserDot from '../../components/map/UserDot';
 import { MAP_IMAGE } from '../../data/mapConfig';
 import { MapPoint } from '../../types';
-import { colors, spacing } from '../../constants/campusTheme';
 
 const MAX_SCALE = 5;
 
@@ -45,7 +42,6 @@ export default function CampusMap({
   onMapPress,
 }: Props) {
   const { width, height } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
 
   const mapWidth = Math.max(width, height);
   const mapHeight = (mapWidth * MAP_IMAGE.height) / MAP_IMAGE.width;
@@ -151,15 +147,6 @@ export default function CampusMap({
     ],
   }));
 
-  // The compass needle turns with the map, so it always points to north.
-  const compassStyle = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${rotation.value}rad` }],
-  }));
-
-  const resetNorth = () => {
-    rotation.value = withTiming(0);
-    savedRotation.value = 0;
-  };
 
   const handlePinPress = (id: string) => {
     lastPinPress.current = Date.now();
@@ -237,17 +224,6 @@ export default function CampusMap({
         </View>
       </GestureDetector>
 
-      <Pressable
-        onPress={resetNorth}
-        accessibilityRole="button"
-        accessibilityLabel="Reset map to north"
-        style={[styles.compass, { top: insets.top + spacing.sm + 68 }]}
-      >
-        <Animated.View style={[styles.compassInner, compassStyle]}>
-          <Text style={styles.compassLetter}>N</Text>
-          <Navigation2 size={16} color={colors.error} fill={colors.error} />
-        </Animated.View>
-      </Pressable>
     </GestureHandlerRootView>
   );
 }
@@ -255,17 +231,4 @@ export default function CampusMap({
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#CFE8F7' },
   mapArea: { flex: 1, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  compass: {
-    position: 'absolute',
-    right: spacing.md,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 6,
-  },
-  compassInner: { alignItems: 'center', justifyContent: 'center' },
-  compassLetter: { fontSize: 10, fontWeight: '800', color: colors.primaryDark, lineHeight: 11 },
 });

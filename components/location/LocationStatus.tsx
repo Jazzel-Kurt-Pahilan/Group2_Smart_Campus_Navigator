@@ -1,4 +1,6 @@
-import React from 'react';
+﻿
+import { MapPinOff } from 'lucide-react-native';
+
 import {
   ActivityIndicator,
   StyleSheet,
@@ -11,38 +13,39 @@ type LocationStatusProps = {
   loading: boolean;
   error: string | null;
   onRetry: () => void;
+  onOpenSettings?: () => void;
+  permissionBlocked?: boolean;
 };
 
 export default function LocationStatus({
   loading,
   error,
   onRetry,
+  onOpenSettings,
+  permissionBlocked = false,
 }: LocationStatusProps) {
   // Loading state
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator
-          size="large"
-          color="#F5B014"
-        />
+        <ActivityIndicator size="large" color="#F5B014" />
 
         <Text style={styles.title}>
           Getting your location...
         </Text>
 
         <Text style={styles.message}>
-          Please wait while we determine your current location.
+          Please wait while we check your location permission.
         </Text>
       </View>
     );
   }
 
-  // error/deny permission state
+  // Error or denied-permission state
   if (error) {
     return (
       <View style={styles.container}>
-        <Text style={styles.icon}>📍</Text>
+        <MapPinOff size={42} color="#F5B014" style={{ marginBottom: 12 }} />
 
         <Text style={styles.title}>
           Location Unavailable
@@ -54,10 +57,16 @@ export default function LocationStatus({
 
         <TouchableOpacity
           style={styles.button}
-          onPress={onRetry}
+          onPress={
+            permissionBlocked && onOpenSettings
+              ? onOpenSettings
+              : onRetry
+          }
         >
           <Text style={styles.buttonText}>
-            Try Again
+            {permissionBlocked && onOpenSettings
+              ? 'Open Settings'
+              : 'Try Again'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -76,11 +85,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
 
-  icon: {
-    fontSize: 42,
-    marginBottom: 12,
-  },
-
   title: {
     color: '#FFFFFF',
     fontSize: 22,
@@ -88,7 +92,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
-
   message: {
     color: '#E2E8F0',
     fontSize: 15,
@@ -96,14 +99,12 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: 24,
   },
-
   button: {
     backgroundColor: '#F5B014',
     paddingVertical: 12,
     paddingHorizontal: 28,
     borderRadius: 8,
   },
-
   buttonText: {
     color: '#020617',
     fontSize: 16,

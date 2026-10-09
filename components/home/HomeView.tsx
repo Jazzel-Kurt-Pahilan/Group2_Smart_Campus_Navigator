@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 
 import { COLORS, FONTS, IS_SMALL_DEVICE } from '@/constants/theme';
-import BrandTitle from './home/BrandTitle';
-import ExploreButton from './home/ExploreButton';
-import PermissionNotice from './home/PermissionNotice';
+import BrandTitle from './BrandTitle';
+import ExploreButton from './ExploreButton';
+import PermissionNotice from './PermissionNotice';
 
 type Props = {
   checking: boolean;
@@ -32,7 +32,7 @@ export default function HomeView({
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       <ImageBackground
-        source={require('../assets/welcomebg.png')}
+        source={require('../../assets/campus_img/welcomebg.png')}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
