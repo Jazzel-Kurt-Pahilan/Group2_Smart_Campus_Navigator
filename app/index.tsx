@@ -24,7 +24,7 @@ export default function HomeScreen() {
     const granted = await requestAccess();
 
     if (granted) {
-      router.push('/MapScreen');
+      router.push('/map');
     }
   };
 
