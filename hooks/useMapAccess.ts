@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import {
-    openLocationSettings,
-    requestMapAccess,
-} from '../domain/location/requestMapAcess';
+  openLocationSettings,
+  requestMapAccess,
+} from '../domain/location/requestMapAccess';
 
 export function useMapAccess() {
   const [checking, setChecking] = useState(false);
