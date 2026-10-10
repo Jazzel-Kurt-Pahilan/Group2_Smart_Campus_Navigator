@@ -2,12 +2,7 @@
 import DestinationCard from '@/components/destinations/DestinationCard';
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import destinations from '../services/destinationService';
 
 export default function DestinationsScreen() {
@@ -18,7 +13,7 @@ export default function DestinationsScreen() {
       style={styles.container}
       contentContainerStyle={styles.content}
     >
-      {/* Back to Map button */}
+      {/* Back Map button */}
       <Pressable
         style={styles.backButton}
         onPress={() => router.replace('/map')}
