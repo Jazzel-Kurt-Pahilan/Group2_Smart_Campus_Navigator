@@ -21,8 +21,8 @@ import { getIssueContent } from '../utils/permissionMessages';
 import { buildRoute, getGraphLines, hasArrived } from '../utils/routing';
 
 // TESTING: Keep fake GPS and walkway graph enabled.
-const DEBUG_FAKE_LOCATION: UserLocation | null = { latitude: 8.48652, longitude: 124.65573, accuracy: 5 };
-const SHOW_PATH_GRAPH = true;
+const DEBUG_FAKE_LOCATION: UserLocation | null = null;
+const SHOW_PATH_GRAPH = false;
 
 export default function MapScreen() {
   const router = useRouter();
